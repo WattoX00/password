@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #1e293b, #0f172a);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-white">
+    <div id="root"></div>
+    <script type="text/babel">
+        function PasswordGenerator() {
+            const { useState } = React;
+            const [length, setLength] = useState(12);
+            const [includeNumbers, setIncludeNumbers] = useState(true);
+            const [includeUppercase, setIncludeUppercase] = useState(true);
+            const [includeSymbols, setIncludeSymbols] = useState(true);
+            const [password, setPassword] = useState("");
+
+            const generatePassword = () => {
+                const lowercase = "abcdefghijklmnopqrstuvwxyz";
+                const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const numbers = "0123456789";
+                const symbols = "!@#$%^&*()_+{}[]|:;<>,.?/";
+                
+                let chars = lowercase;
+                if (includeUppercase) chars += uppercase;
+                if (includeNumbers) chars += numbers;
+                if (includeSymbols) chars += symbols;
+                
+                let generatedPassword = "";
+                for (let i = 0; i < length; i++) {
+                    generatedPassword += chars[Math.floor(Math.random() * chars.length)];
+                }
+                setPassword(generatedPassword);
+            };
+
+            const copyToClipboard = () => {
+                navigator.clipboard.writeText(password);
+            };
+
+            return (
+                <div className="p-8 glass rounded-2xl w-96 text-center">
+                    <h2 className="text-2xl font-bold mb-6">🔐 Password Generator</h2>
+                    <div className="flex items-center mb-6 bg-gray-900 p-3 rounded-xl shadow-md">
+                        <input className="flex-1 bg-transparent text-lg text-white outline-none" value={password} readOnly />
+                        <button onClick={copyToClipboard} className="ml-3 p-2 bg-blue-500 hover:bg-blue-600 rounded-xl transition-transform transform hover:scale-110">📋</button>
+                    </div>
+                    <div className="mb-4">
+                        <label className="block mb-2">Password Length: {length}</label>
+                        <input type="range" min="6" max="32" value={length} onChange={(e) => setLength(e.target.value)} className="w-full" />
+                    </div>
+                    <div className="space-y-2 mb-6">
+                        <label className="flex justify-between items-center text-lg"><span>Numbers</span><input type="checkbox" checked={includeNumbers} onChange={() => setIncludeNumbers(!includeNumbers)} className="w-5 h-5" /></label>
+                        <label className="flex justify-between items-center text-lg"><span>Uppercase</span><input type="checkbox" checked={includeUppercase} onChange={() => setIncludeUppercase(!includeUppercase)} className="w-5 h-5" /></label>
+                        <label className="flex justify-between items-center text-lg"><span>Symbols</span><input type="checkbox" checked={includeSymbols} onChange={() => setIncludeSymbols(!includeSymbols)} className="w-5 h-5" /></label>
+                    </div>
+                    <button onClick={generatePassword} className="w-full p-3 bg-green-500 hover:bg-green-600 rounded-xl text-lg font-semibold transition-transform transform hover:scale-105">Generate Password</button>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<PasswordGenerator />);
+    </script>
+</body>
+</html>
